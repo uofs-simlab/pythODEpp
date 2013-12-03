@@ -1,0 +1,240 @@
+\documentclass[11pt]{article}
+
+\usepackage{acronym}
+\usepackage{verbatim}
+\usepackage{geometry}
+\usepackage{listings}
+
+\newcommand{\pythode}{\texttt{pythODE}}
+\newcommand{\pypp}{\texttt{pythODE++}}
+\newcommand{\adolc}{\texttt{ADOL-C}}
+\newcommand{\umfpack}{\texttt{UMFPACK}}
+\newcommand{\colpack}{\texttt{ColPack}}
+\newcommand{\gnuplot}{\texttt{gnuplot}}
+
+\acrodef{IVP}{initial-value problem}
+\acrodef{OO}{object oriented}
+\acrodef{PSE}{problem-solving environment}
+
+\title{Getting Started with \pypp}
+\author{Adam Preuss}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+The \pypp\ \ac{PSE} is designed to evaluate permutations of numerical methods and \acp{IVP}.
+It is a stand-alone collection of scripts and programs that is heavily based on the functionality of \pythode.
+The \pypp\ PSE is designed to be the performance-focused, whereas \pythode\ is geared toward performing in-depth and highly customizable analysis.
+
+The numerical methods and \acp{IVP} in \pypp\ are written entirely in C++.
+A general overview of the software, motivation, and specific examples of application is presented in~\cite{preuss14}.
+This tutorial aims to introduce a user to the basics of behind implementing \acp{IVP} and numerical methods in \pypp.
+This tutorial is not complete documentation for each software component.
+However, there are many examples of \acp{IVP} and numerical methods that are already implemented in \pypp, which should be used 
+as a starting point for implementing new, more complicated problems and methods.
+
+\subsection{Requirements}
+
+\subsubsection{System}
+
+The minimalistic version of \pypp\ requires a C++ compiler and Python version 2.7.3. In principle, \pypp\ should, therefore, be supported by any UNIX-like operating system, Windows, or Mac OS X. The \pypp\ PSE is run exclusively using a command line.
+
+It is necessary to have \adolc\ installed if automatic differentiation is desired. To use sparse matrices, \umfpack\ is required, along with its supporting library for sparsity, \colpack. Analysis graphs are generated using \gnuplot; therefore, \gnuplot\ should be installed. Specific instructions for installing these packages is generally operating system dependant.
+
+\subsubsection{Knowledge}
+
+To have a sense of the function of the supporting code, the user should be relatively comfortable with general programming concepts such as virtual memory, lists, hashes, and function pointers, as well as \ac{OO} concepts including (abstract) classes, inheritance, polymorphism, and operator overloading.
+Further, an understanding the basic concepts of efficient programming with respect to the machine cache is highly beneficial.
+
+As discussed in Section~\ref{sec:intro}, the \pypp\ \ac{PSE} is written in a combination of C++ and Python.
+This software makes use of many advanced C++ concepts.
+Although the implementation of numerical methods and \acp{IVP} is not generally complicated, much of the supporting code uses such concepts.
+Specific examples include templated classes/functions and exception handling.
+
+\section{Software Design}
+
+The software is organized into the following directories:
+\begin{itemize}
+\item \verb=analysis= contains C++ code for loading problem runs from disk and performing analysis passes on them.
+\item \verb=core= contains all supporting functions and classes for vectors, matrices, hashes, lists, file input/output, etc.
+\item \verb=ivps= contains implementations for all \acp{IVP} in \pypp.
+\item \verb=loaders= contains supporting code that maintains a registry of all solvers, methods, and IVPs. This directory also contains the entry point for all components of the software such as the runner and the analysis tools.
+\item \verb=methods= contains implementations for all methods in \pypp.
+\item \verb=runner= contains code for running a set of parameters.
+\item \verb=scripts= contains Python scripts for each of the numerical experiments.
+\item \verb=solvers= contains implementations for all solvers in \pypp.
+\item \verb=tutorial= contains the \LaTeX\ source associated with this document.
+\end{itemize}
+
+\section{Scripting}
+
+The scripts contains many examples that evaluate numerical methods on IVPs. In general, performing an experiment consists of two parts. First, the runner loops over a set of specified runs. Second, 
+the analysis modules can be used to gather runs and generate meaningful graphs.
+
+Each numerical experiment can be contained in a single Python module. A numerical experiment can be invoked by using the \verb=run-experiment.sh= script and specifying the module name (without the .py) as the argument. This module that defined the numerical experiment must specify the following two global variables:
+\begin{itemize}
+\item \verb=simname= is the name of the numerical simulation. It is used in directory names and can generally be thought of as a unique identifier for a set of similar numerical experiments. This name should probably not contain spaces, only because file management is frustrating when files contain spaces. 
+\item \verb=simpath= is the path for the numerical simulation. All files associated with the simulation are stored in this path. The auto-runner creates new directories within this path each time a numerical simulation is conducted; therefore, the simulation path can shared for all \pypp\ simulations. For clean file management, it might be useful (though not necessary) to add \verb=simname= as a subdirectory \verb=simpath=, as is done in virtually all of the examples in \pypp.
+\end{itemize}
+
+There are two important functions required to specify a numerical simulation. The first construct a list of run parameters; the second specifies the analysis passes.
+
+Run parameters are specified by the function \verb=GenerateRunList()=, which returns a list of hashes. Each hash specifies the set of parameters for the run. What follows is a list of parameters that are commonly used. All of these are not required; please use intuition for solving IVPs when deciding whether a parameter combination makes sense, e.g., specifying a constant solver with a predictive step controller does not make any sense. Additional method- or problem-specific parameters may be specified as well. The following example shows how to instruct \pypp\ to solve two IVPs using two methods.
+\begin{lstlisting}[tabsize=4,language=Python]
+def GenerateRunList():
+	runlist = []
+	for ivp in ('Brusselator1D','Brusselator2D'):
+		for method in ('RK4','DOPR54'):
+			runlist.append({'ivp':ivp,
+							'method':method,
+							'solver':'ConstantSolver',
+							'dt':1e-2})
+	return runlist
+\end{lstlisting}
+
+\begin{center}
+\begin{tabular}{|p{.25\linewidth}|p{.65\linewidth}|}
+\hline
+\multicolumn{2}{|c|}{Required Parameters} \\
+\hline \hline
+\verb=ivp= & The (registered) name of the IVP that is to be solved, e.g., \verb=Brusselator1D=.\\\hline
+\verb=method= & The (registered) name of the method that is to be used, e.g., \verb=RK4=. \\\hline
+\verb=solver= & The solver that is to be used. This value can be one of \verb=ConstantSolver=, \verb=StepDoublingSolver=, or \verb=EmbeddedSolver=. \\\hline
+\hline
+\multicolumn{2}{|c|}{(Generally) Optional Parameters} \\
+\hline \hline
+\verb=dt= & Initial timestep. \\\hline
+\verb=atol= & Absolute tolerance for step control. The default is $10^{-5}$.\\\hline
+\verb=rtol= & Relative tolerance for step control. The default is $10^{-5}$.\\\hline
+\verb=newton tol= & Tolerance for Newton's method. The default is $10^{-8}$.\\\hline
+\verb=sparse= & Specifies whether to use sparsity when solving linear systems. This value can either be 0 or 1. \\\hline
+\verb=jacobian= & The method of Jacobian calculation. The options for this value are \verb=Forward=, \verb=Centred=, \verb=Autodiff=, or \verb=Analytic=. \\\hline
+\verb=jacobian splitting= & Specifies whether to apply Jacobian splitting to the IVP. This value can either be 0 or 1. \\\hline
+\verb=max steps= & The maximum number of steps until simulation is stopped. \\\hline
+\verb=min write time=& The minimum amount of elapsed simulation time before the next solution point can be written. A better approach is to use an interpolant that is associated with the numerical method. However, \pypp\ does not presently support an interpolated output. \\\hline
+\verb=timing group=& A given parameter set must be run multiple times to conduct accurate timings. This is accomplished by specifying the parameter set hash multiple times in the run list. Each group of identical parameter sets should have a unique timing group (unique with respect to other sets of identical parameters) so the analysis phase can appropriately group runs. \\\hline
+\end{tabular}
+\end{center}
+
+Analysis passes are specified by the function \verb=GenerateAnalysisPasses()=, which similarly returns a list of hashes. Each hash specifies the set of parameters to be used in conduction the analysis pass. For example, to print reference solutions, perform time versus accuracy comparisons, and perform steps versus accuracy comparisons, the analysis function might look like:
+\begin{lstlisting}[tabsize=4,language=Python]
+def GenerateAnalysisPasses():
+	passes = []
+	for ivp in ivps:
+		# Perform solution plots
+		passes.append({ 'mode': 'Solutions',
+						'title': ivp + ' Solutions',
+						'filename': ivp + '-solutions',
+						'xlabel': 'Time (s)',
+						'ylabel': 'Solution',
+						'legend': SolutionLegendName,
+						'match': {'ivp': ivp,
+								  'method': methods,
+								  'atol': tolerances[-1][0] } })
+		# Perform time versus accuracy plots
+		passes.append({ 'mode': 'Accuracy',
+						'title': ivp + ' CPU Time vs. Accuracy',
+						'filename': ivp + '-cputime',
+						'xlabel': 'Accuracy',
+						'ylabel': 'CPU Time (ms)',
+						'legend': AccuracyLegendName,
+						'reference solution': reference_solutions[ivp],
+						'match': {'ivp': ivp},
+						'comparison': 'time',
+						'group': ['method','solver','jacobian'] })
+		# Perform steps versus accuracy plots
+		passes.append({ 'mode': 'Accuracy',
+						'title': ivp + ' Steps vs. Accuracy',
+						'filename': ivp + '-steps',
+						'xlabel': 'Accuracy',
+						'ylabel': 'Steps',
+						'legend': AccuracyLegendName,
+						'reference solution': reference_solutions[ivp],
+						'match': {'ivp': ivp},
+						'comparison': 'steps',
+						'group': ['method','solver','jacobian'] })
+\end{lstlisting}
+
+
+\section{Implementing a Problem}
+
+The implementation of an IVP consists of defining the right-hand side and the initial condition. All IVPs inherit from the base-class \verb=BaseIVP=. It is best to learn by example. There are many IVPs provided with \pypp\ with which to base future implementations. This section gives a brief overview of the basics for implementing IVPs in \pypp.
+
+For the simple ODE $y'=-y, y(0)=10$ where the final simulation time is 5, a implementation might look like:
+
+\begin{lstlisting}[tabsize=4,language=c++]
+// TestEquation is inheriting from BaseIVP
+class TestEquation : public BaseIVP {	
+protected: 
+	// Definition of the right-hand side.
+	// The function name and parameters must match
+	// this format exactly.
+	void RHS(const FP t, const Vec<FP>& y, Vec<FP>& yp) {
+		yp(0) = -y(0);
+	}
+
+public:
+	// Definition of the constructor.
+	// Once again, the parameters must match exactly, and
+	// this function must always pass params to the BaseIVP
+	TestEquation(Hash<ParamValue>& params) : BaseIVP(params) {
+		// Set the (default) final time
+		SetDefaultFP(params, "tf", 5.);
+		 // Set the problem size to 1
+		_initialCondition.Resize(1);
+		// Set the initial condition to 10
+		_initialCondition[0] = 10;
+	}
+	
+	IVP_NAME("Nonstiff A1") // Macro to define IVP name
+};
+\end{lstlisting}
+
+The right-hand side of the IVP can be interpreted as additively split when it is comprised of the sum of two or more contributing factors. A specific class \verb=TwoSplittingIVP= inherits from \verb=BaseIVP= to make implementations of 2-split IVPs easy. In such cases, the user can simply define:
+\begin{itemize}
+\item \verb=void Split1(const FP t, const Vec<FP>& y, Vec<FP>& yp) { ... }=
+\item \verb=void Split2(const FP t, const Vec<FP>& y, Vec<FP>& yp) { ... }=
+\end{itemize}
+
+For many numerical methods, the Jacobian is required. Forward and centred Jacobian matrices do not require any additional implementation work; automatically differentiated and manual analytic approaches do. The class \verb=BaseIVP= contains a virtual function \verb=JacAnalytic= (or \verb=JacAnalyticSparse= when using sparsity) that can be overloaded to provide the analytic Jacobian. See the example contained in \verb=ivps/zbinden/advection1d.h= for an IVP that is 2-split, supports automatic differentiation, and defines a manual analytic Jacobian.
+
+\section{Implementing a Method}
+
+The implementation of a method defines how to take a step from one state to another. The following examples show how to create a single RK method and an IMEX method. The \verb=Runge2= is a second order, explicit RK method, which is implemented as
+\begin{lstlisting}[tabsize=4,language=c++]
+// Inherit from the class of ERK methods
+class Runge2 : public ERK {
+public:
+	// Constructor that specifies a Butcher tableau
+	// of size 2
+	Runge2(Hash<ParamValue>& params, BaseIVP* ivp)
+		: ERK(params, ivp, 2) {
+		_a(1,0) = 1./2;
+		_b(1) = 1.;
+		// Fill up the C values to make the method
+		// consistent
+		FillC();
+	}
+
+	// The name of method
+	const char* GetName() const {
+		return "Runge 2";
+	}
+
+	// Specify the order for step control	
+	long GetOrder() const {
+		return 2;
+	}
+};
+\end{lstlisting}
+
+The IMEX method specifies two Butcher tableaux, where \verb=_a= and \verb=_b= refer to the implicit tableau, and \verb=_a2= and \verb=_b2= refer to the explicit tableau. Examples are given for any method in the folder \verb=methods/ark=.
+
+\bibliographystyle{plain}
+\bibliography{tutorial}
+
+\end{document}
+

@@ -1,0 +1,158 @@
+#!/usr/bin/env python
+
+import os
+import sys
+from subprocess import call, Popen, PIPE
+
+CC       = 'g++'
+debug    = False
+clean    = False
+sparsity = True
+adolc    = True
+verbose  = False
+
+for a in sys.argv[1:]:
+	if a == 'debug':
+		debug = True
+	elif a == 'clean':
+		clean = True
+	elif a == 'verbose':
+		verbose = True
+	elif a == 'nosparsity':
+		splitext = False
+	elif a == 'noadolc':
+		adolc = False
+	else:
+		print 'Unrecognized option', a
+		sys.exit(2)
+	
+debug_flags = ['-Wall','-g','-DDEBUGBUILD'] if debug else ['-O3']
+ld_flags = [] if debug else ['-O3']
+
+# Root build directory
+root_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+def ShouldRebuild(ofile, dependencies):
+	if not os.path.isfile(ofile):
+		return True
+
+	otime = os.path.getmtime(ofile)
+	for d in dependencies:
+		if d == '':
+			continue
+		if not os.path.isfile(d):
+			return True
+		if os.path.getmtime(d) > otime:
+			return True
+			
+	return False
+
+def BuildDirectories(build_dir):
+	print "~~", build_dir
+	obj_files = []
+
+	# Keep recursing through the directories in the project
+	for path, dirs, files in os.walk(build_dir):
+		dirs = filter(lambda d: d[0] != '.', dirs)
+		files = filter(lambda d: d[0] != '.', files)
+
+		for f in files:
+			full_name = os.path.join(path,f)
+			file_name, file_ext = os.path.splitext(full_name)
+
+			# Check if we should clean
+			if clean:
+				if file_ext == '.o' or file_ext == '.d':
+					os.unlink(os.path.join(path,f))
+				continue				
+
+			if file_ext == '.cpp':
+				ofile = file_name + '.o'
+				dfile = file_name + '.d'
+
+				# Get dependencies, if they exist.
+				if os.path.isfile(dfile):
+					df = open(dfile, 'r')
+					dependencies = df.read().split('\n')
+					df.close()
+				else:
+					dependencies = None
+
+				if dependencies is None or ShouldRebuild(ofile, dependencies):
+					command = [CC, '-c'] + debug_flags + ['-I'+root_dir, full_name]
+					if sparsity:
+						command += ['-DUSE_SUITESPARSE']
+					if adolc:
+						command += ['-DUSE_ADOL_C']
+
+					# Build the object file
+					print "Building", full_name
+					cmd = command + ['-o', ofile]
+					if verbose:
+						print ' '.join(cmd)
+					if call(cmd):
+						sys.exit(1)
+
+					# Build the dependencies
+					print "Generating", dfile
+					dfileHandle = open(dfile,'w')
+					cmd = command + ['-MM','-MT','target']
+					if verbose:
+						print ' '.join(cmd)
+					p1 = Popen(cmd, stdout=PIPE)
+					p2 = Popen(['sed', '-E',
+								'-e', 's/^target://',	
+								'-e', 's/\\\\$//',
+								'-e', 's/^ +//g',	
+								'-e', 's/ +$//g',	
+								'-e', 's/([^\\\\]) /\\1\\\n/g'],
+								stdin=p1.stdout, stdout=dfileHandle)
+					p1.stdout.close()
+					p1.wait()
+					p2.wait()
+					dfileHandle.close()
+
+				obj_files += [ofile]
+	
+	return obj_files
+
+def RunLinker(ofile,obj_files,libs):
+	if clean:
+		if os.path.isfile(ofile):
+			os.unlink(ofile)
+		return
+
+	out_file = os.path.join(root_dir,ofile)
+	command = [CC] + obj_files + ld_flags + libs + ['-o',out_file]
+
+	if not ShouldRebuild(out_file, obj_files):
+		print "No changes detected for " + out_file
+		return
+
+	print "Linking", ofile
+	if verbose:
+		print ' '.join(command)
+	if call(command):
+		sys.exit(1)
+
+coreFiles = []
+coreFiles += BuildDirectories(os.path.join(root_dir, 'core'))
+coreFiles += BuildDirectories(os.path.join(root_dir, 'ivps'))
+coreFiles += BuildDirectories(os.path.join(root_dir, 'methods'))
+coreFiles += BuildDirectories(os.path.join(root_dir, 'solvers'))
+coreFiles += BuildDirectories(os.path.join(root_dir, 'loaders'))
+coreFiles += BuildDirectories(os.path.join(root_dir, 'analysis'))
+
+lib = ['-lm']
+
+if adolc:
+	lib += ['-ladolc','-lColPack']
+
+if sparsity:
+	lib += ['-lumfpack','-lamd','-lcholmod','-lcolamd']
+
+	if sys.platform == 'darwin':
+		lib += ['-framework','Accelerate','-lsuitesparseconfig']
+
+RunLinker(os.path.join(root_dir,'pythODE++'), coreFiles, lib)
+
