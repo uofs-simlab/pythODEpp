@@ -13,13 +13,13 @@ def GetSolution(args):
 		shutil.rmtree(runpath)
 	os.makedirs(runpath)
 
-	command = ['../pythode++', '-phase', 'runner', '-solver', 'ConstantSolver', '-path', runpath] + args
+	command = ['../pythODE++', '-phase', 'runner', '-solver', 'ConstantSolver', '-path', runpath] + args
 	if verbose:
 		print ' '.join(command)
 	p = subprocess.Popen(command)
 	p.wait()
 	
-	p = subprocess.Popen(['../pythode++', '-phase', 'dumpsolution', '-path', runpath], stdout=subprocess.PIPE)
+	p = subprocess.Popen(['../pythODE++', '-phase', 'dumpsolution', '-path', runpath], stdout=subprocess.PIPE)
 	out,_ = p.communicate()
 
 	if os.path.exists(runpath):

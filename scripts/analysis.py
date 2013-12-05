@@ -285,5 +285,5 @@ def RunAnalysisPass(ap, program):
 
 passes = expmodule.GenerateAnalysisPasses()
 for i in range(len(passes)):
-	RunAnalysisPass(passes[i],["../pythonde++","-phase","gnuplot1d"])
+	RunAnalysisPass(passes[i],["../pythODE++","-phase","gnuplot1d"])
 

@@ -21,7 +21,7 @@ class WorkerThread(threading.Thread):
 				arglist.append('-'+a)
 				arglist.append(str(argdict[a]))
 			os.chdir(argdict['path'])
-			result = subprocess.call([os.path.join(root_dir,'..','pythode++'),'-phase','runner']+arglist)
+			result = subprocess.call([os.path.join(root_dir,'..','pythODE++'),'-phase','runner']+arglist)
 			if result != 0:
 				print "run failed:", argdict['path']
 				print ' '.join(map(lambda x: "'"+x+"'",arglist))

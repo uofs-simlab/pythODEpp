@@ -31,7 +31,7 @@ dt = 1
 
 
 def CallDump(method,coeff):
-	return subprocess.check_output([os.path.join(root_dir,'..','pythode++'),'-phase','runner','-method',method,coeff]).strip()
+	return subprocess.check_output([os.path.join(root_dir,'..','pythODE++'),'-phase','runner','-method',method,coeff]).strip()
 
 x = np.linspace(xmin, xmax, nx)
 y = np.linspace(ymin, ymax, ny)

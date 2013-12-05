@@ -15,12 +15,12 @@ os.makedirs(plotpath)
 def GetEigenvalues(plotname, ivp, title, dt, params=''):
 	os.makedirs(runpath)
 	print 'Running',ivp,'for',plotname
-	subprocess.call('../pythode++ -phase runner -method Radau5 -ivp ' + ivp + ' -solver EmbeddedSolver ' + params + ' -path ' + runpath, shell=True)
+	subprocess.call('../pythODE++ -phase runner -method Radau5 -ivp ' + ivp + ' -solver EmbeddedSolver ' + params + ' -path ' + runpath, shell=True)
 	plotfile = os.path.join(plotpath,plotname)
 	print '  setting title.'
 	subprocess.call('echo set title \\\''+title+'\\\' > ' + plotfile, shell=True)
 	print '  computing eigenvalues.'
-	subprocess.call('../pythode++ -phase eigenvalues -ivp ' + ivp + ' -path ' + runpath + ' -dt ' + dt + ' ' + params + ' | python >> ' + plotfile, shell=True)
+	subprocess.call('../pythODE++ -phase eigenvalues -ivp ' + ivp + ' -path ' + runpath + ' -dt ' + dt + ' ' + params + ' | python >> ' + plotfile, shell=True)
 	print '  writing pdf.'
 	subprocess.call('gnuplot < ' + plotfile + ' > ' + plotfile + '.pdf', shell=True)
 	print '  complete.'

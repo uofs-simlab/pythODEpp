@@ -1,20 +1,21 @@
 import os
 import itertools
 
-simname = 'allen-cahn'
+simname = 'allen-cahn-ray'
 simpath = os.path.join(os.getenv('HOME'), 'tmp', simname)
 
 method_solvers = { 'ForwardEuler': ['StepDoublingSolver'],
 				   'BackwardEuler': ['StepDoublingSolver'],
 				   'ARK1': ['StepDoublingSolver'],
+				   'ARK3': ['StepDoublingSolver'],
 				   'Radau5': ['EmbeddedSolver'] }
 methods = [ m for m in method_solvers ]
 ark_methods = [ 'ARK1', 'ARK3', 'ARK4', 'ARK5' ]
 ivps = ['AllenCahn']
 reference_method = 'Radau5'
 
-tolerances = [(10**-t,10**-t) for t in range(4,9)]
-unknowns = (100,)
+tolerances = [(10**-t,10**-t) for t in range(4,10)]
+unknowns = (50,200)
 lambdas = (0.1,1.)
 gammas = (0.1,1.)
  
@@ -32,7 +33,7 @@ def GenerateRunList():
 						   "lambda": l,
 						   "gamma": g,
 						   "sparse": 1,
-						   "jacobian": "Autodiff",
+						   "jacobian": "Analytic",
 						   "max steps": 1000000,
 						   "min write time": 1. }
 				argdict.update(tol)
