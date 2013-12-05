@@ -75,7 +75,7 @@ class AllenCahn : public TwoSplittingIVP {
 
 public:
 	AllenCahn(Hash<ParamValue>& params) : TwoSplittingIVP(params) {
-		SetDefaultFP(params, "tf", 100.);
+		SetDefaultFP(params, "tf", 0.2);
 
 		_alpha = GetDefaultFP(params, "alpha", 1e-1);
 		_gamma = GetDefaultFP(params, "gamma", 1e0);

@@ -5,8 +5,10 @@
 
 class ARK1 : public IMEX {
 public:
-	ARK3(Hash<ParamValue>& params, BaseIVP* ivp) : IMEX(params, ivp, 1) {
-		_a(0,0) = 1;
+	ARK1(Hash<ParamValue>& params, BaseIVP* ivp) : IMEX(params, ivp, 1) {
+		_a(0,0) = 1.;
+		_b(0) = _b2(0) = 1.;
+
 		FillC();
 		FillC2();
 	}
