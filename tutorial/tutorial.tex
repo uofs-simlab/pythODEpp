@@ -13,7 +13,7 @@
 \newcommand{\gnuplot}{\texttt{gnuplot}}
 
 \acrodef{IVP}{initial-value problem}
-\acrodef{OO}{object oriented}
+\acrodef{OO}{object-oriented}
 \acrodef{PSE}{problem-solving environment}
 
 \title{Getting Started with \pypp}
@@ -28,18 +28,19 @@
 The \pypp\ \ac{PSE} is designed to evaluate permutations of numerical
 methods and \acp{IVP}.  It is a stand-alone collection of scripts and
 programs that is heavily based on the functionality of \pythode.  The
-\pypp\ PSE is designed to be the performance-focused, whereas
-\pythode\ is geared toward performing in-depth and highly customizable
+\pypp\ PSE is designed to be performance-focused, whereas \pythode\ is
+geared more toward performing in-depth and highly customizable
 analysis.
 
 The numerical methods and \acp{IVP} in \pypp\ are written entirely in
-C++.  A general overview of the software, motivation, and specific
+C++.  The supporting execution and analysis scripts are written in
+Python. A general overview of the software, motivation, and specific
 examples of application is presented in~\cite{preuss14}.  This
 tutorial aims to introduce a user to the basics of behind implementing
 \acp{IVP} and numerical methods in \pypp.  This tutorial is not
 complete documentation for each software component.  However, there
 are many examples of \acp{IVP} and numerical methods already
-implemented in \pypp that can be used as a starting point for
+implemented in \pypp\ that can be used as a starting point for
 implementing new, more complicated problems and methods.
 
 \subsection{Requirements}
@@ -49,8 +50,9 @@ implementing new, more complicated problems and methods.
 The minimalistic version of \pypp\ requires a C++ compiler and Python
 version 2.7.3. Therefore, \pypp\ should be supported in principle by
 any UNIX-like operating system, Windows, or Mac OS X. The \pypp\ PSE
-is run exclusively using a command line.
+is run exclusively from the command line.
 
+% poorly written (needs parallel structure)
 It is necessary to have \adolc\ installed if automatic differentiation
 is desired. To use sparse matrices, \umfpack\ is required, along with
 its supporting library for sparsity, \colpack. Analysis graphs are
@@ -60,8 +62,13 @@ generally operating-system dependent.
 
 \subsubsection{Background Knowledge}
 
-To have a sense of the function of the supporting code, the user should be relatively comfortable with general programming concepts such as virtual memory, lists, hashes, and function pointers, as well as \ac{OO} concepts including (abstract) classes, inheritance, polymorphism, and operator overloading.
-Further, an understanding the basic concepts of efficient programming with respect to the machine cache is highly beneficial.
+To have a sense of the function of the supporting code, the user
+should be relatively comfortable with general programming concepts
+such as virtual memory, lists, hashes, and function pointers, as well
+as \ac{OO} concepts including (abstract) classes, inheritance,
+polymorphism, and operator overloading.  Further, an understanding the
+basic concepts of efficient programming with respect to the machine
+cache is highly beneficial.
 
 As discussed in Section~\ref{sec:intro}, the \pypp\ \ac{PSE} is written in a combination of C++ and Python.
 This software makes use of many advanced C++ concepts.
@@ -94,14 +101,27 @@ meaningful graphs.
 Each numerical experiment can be contained in a single Python
 module. A numerical experiment can be invoked by using the
 \verb=run-experiment.sh= script and specifying the module name
-(without the .py) as the argument. This module defining the
+(without the \verb=.py=) as the argument. This module defining the
 numerical experiment must specify the following two global variables:
 \begin{itemize}
-\item \verb=simname= is the name of the numerical simulation. It is used in directory names and can generally be thought of as a unique identifier for a set of similar numerical experiments. This name should probably not contain spaces, only because file management is frustrating when files contain spaces. 
-\item \verb=simpath= is the path for the numerical simulation. All files associated with the simulation are stored in this path. The auto-runner creates new directories within this path each time a numerical simulation is conducted; therefore, the simulation path can shared for all \pypp\ simulations. For clean file management, it might be useful (though not necessary) to add \verb=simname= as a subdirectory \verb=simpath=, as is done in virtually all of the examples in \pypp.
+\item \verb=simname= is the name of the numerical simulation. It is
+  used in directory names and can generally be thought of as a unique
+  identifier for a set of similar numerical experiments. This name
+  should probably not contain spaces, only because file management is
+  more fragile when file names contain spaces.
+\item \verb=simpath= is the path for the numerical simulation. All
+  files associated with the simulation are stored in this path. The
+  auto-runner creates new directories within this path each time a
+  numerical simulation is conducted; therefore, the simulation path
+  can shared for all \pypp\ simulations. For clean file management, it
+  might be useful (though not necessary) to add \verb=simname= as a
+  subdirectory \verb=simpath=, as is done in virtually all of the
+  examples in \pypp.
 \end{itemize}
 
-There are two important functions required to specify a numerical simulation. The first construct a list of run parameters; the second specifies the analysis passes.
+There are two important functions required to specify a numerical
+simulation. The first construct a list of run parameters; the second
+specifies the analysis passes.
 
 Run parameters are specified by the function \verb=GenerateRunList()=,
 which returns a list of hashes. Each hash specifies the set of
@@ -109,10 +129,10 @@ parameters for the run. What follows is a list of parameters that are
 commonly used. All of these are not required; however, common sense
 must be invoked for solving IVPs when deciding whether a given
 parameter combination is valid, e.g., specifying a constant solver
-with a predictive step controller is not valid. Additional
-method- or problem-specific parameters may be specified as well. The
-following example shows how to instruct \pypp\ to solve two IVPs using
-two methods.
+with a predictive step controller is not valid. Additional method- or
+problem-specific parameters may be specified as well. The following
+example shows how to instruct \pypp\ to solve two IVPs using two
+methods.
 \begin{lstlisting}[tabsize=4,language=Python]
 def GenerateRunList():
 	runlist = []
@@ -198,12 +218,13 @@ def GenerateAnalysisPasses():
 
 The implementation of an IVP consists of defining the right-hand side
 and the initial condition. All IVPs inherit from the base-class
-\verb=BaseIVP=. It is best to learn by example. There are many IVPs
+\verb=BaseIVP=. It is effective to learn by example. There are many IVPs
 provided with \pypp\ upon which to base future implementations. This
 section gives a brief overview of the basics for implementing IVPs in
 \pypp.
 
-For the simple ODE $y'=-y, y(0)=10$ where the final simulation time is 5, a implementation might look like:
+For the simple ODE $y'=-y, y(0)=10$ where the final simulation time is
+5, an implementation might look like:
 
 \begin{lstlisting}[tabsize=4,language=c++]
 // TestEquation is inheriting from BaseIVP
@@ -233,25 +254,30 @@ public:
 };
 \end{lstlisting}
 
-The right-hand side of the IVP can be interpreted as additively split when it is comprised of the sum of two or more contributing factors. A specific class \verb=TwoSplittingIVP= inherits from \verb=BaseIVP= to make implementations of 2-split IVPs easy. In such cases, the user can simply define:
+The right-hand side of the IVP can be interpreted as additively split
+when it is comprised of the sum of two or more contributing factors. A
+specific class \verb=TwoSplittingIVP= inherits from \verb=BaseIVP= to
+make implementations of 2-additive IVPs easy. In such cases, the user can
+simply define:
 \begin{itemize}
 \item \verb=void Split1(const FP t, const Vec<FP>& y, Vec<FP>& yp) { ... }=
 \item \verb=void Split2(const FP t, const Vec<FP>& y, Vec<FP>& yp) { ... }=
 \end{itemize}
 
-For many numerical methods, the Jacobian is required. Forward and
-centred Jacobian matrices do not require any additional work to
-implement; automatically differentiated and manual analytic approaches
-do. The class \verb=BaseIVP= contains a virtual function
-\verb=JacAnalytic= (or \verb=JacAnalyticSparse= when using sparsity)
-that can be overloaded to provide the analytic Jacobian. See the
-example contained in \verb=ivps/zbinden/advection1d.h= for an IVP that
-is 2-split, supports automatic differentiation, and defines a manual
-analytic Jacobian.
+For many numerical methods, the Jacobian is required. Jacobian
+matrices generated by forward or centred differences do not require
+any additional work to implement; ones generated by automatic
+differentiation or manually (e.g., analytical) do. The class
+\verb=BaseIVP= contains a virtual function \verb=JacAnalytic= (or
+\verb=JacAnalyticSparse= when using sparsity) that can be overloaded
+to provide the analytic Jacobian. See the example contained in
+\verb=ivps/zbinden/advection1d.h= for an IVP that is 2-additive,
+supports automatic differentiation, and defines a manual analytic
+Jacobian.
 
 \section{Implementing a Method}
 
-The implementation of a method defines how to take a step from one state to another. The following examples show how to create a single RK method and an IMEX method. The \verb=Runge2= is a second order, explicit RK method, which is implemented as
+The implementation of a method defines how to take a step from one state to another. The following examples show how to create a single RK method and an IMEX method. The \verb=Runge2= is a second-order, explicit RK method, which is implemented as
 \begin{lstlisting}[tabsize=4,language=c++]
 // Inherit from the class of ERK methods
 class Runge2 : public ERK {
