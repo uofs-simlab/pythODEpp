@@ -22,6 +22,8 @@ void EigenvalueMain(Hash<ParamValue>& params, List<ParamValue>& args) {
 	if( !params.Get("ivp") )
 		throw Exception() << "IVP class is required.";
 
+	long split = params["split"].GetLong();
+
 	// Allocate the IVP
 	BaseIVP* ivp;
 	if( !(ivp = AllocIVP(params)) )
@@ -50,7 +52,7 @@ void EigenvalueMain(Hash<ParamValue>& params, List<ParamValue>& args) {
 
 		if( spCurrent.t > t ) {
 			FP alpha = (t-spPrev.t)/(spCurrent.t-spPrev.t);
-			CSRMat<FP>* jac = (CSRMat<FP>*)ivp->JacSparse(t, (1-alpha)*spPrev.y + alpha*spCurrent.y);
+			CSRMat<FP>* jac = (CSRMat<FP>*)ivp->JacSparse(t, (1-alpha)*spPrev.y + alpha*spCurrent.y, split);
 			jac->PrintPython(std::cout);
 
 			std::cout << "eigs = eigs + [e for e in eig(csr_matrix((array(s),array(j),array(i)), shape=(m,n)).todense())[0] ]\n";

@@ -43,9 +43,10 @@ BaseSolver::BaseSolver(Hash<ParamValue>& params, BaseMethod* method, BaseIVP* iv
 	if( !params.Get("tf") )
 		throw Exception() << "solver requires final time.";
 	
-	if( !params.Get("dt") )
+	if( !params.Get("dt") ) {
 		params["dt"].SetFP(1e-3);
-	
+	}
+		
 	if( !params.Get("last step stretch") )
 		params["last step stretch"].SetFP(1.1);
 
