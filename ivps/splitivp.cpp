@@ -7,7 +7,7 @@ void TwoSplittingIVP::FreezeCommon(bool fc) {
 }
 
 FP TwoSplittingIVP::CustomMax0(FP a) {
-	return max(a,0.);
+	return fmax(a,0.);
 }
 
 #ifdef USE_ADOL_C
@@ -117,8 +117,6 @@ void TwoSplittingIVP::Split2(const adouble t, const Vec<adouble>& y, Vec<adouble
 #endif
 
 
-#ifdef USE_SUITESPARSE
-
 void TwoSplittingIVP::PhysicalSplitMatSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& mat) {
 	if( split == 1 ) { 
 		SplitMat1Sparse(t, y, mat);
@@ -136,8 +134,6 @@ void TwoSplittingIVP::SplitMat1Sparse(const FP t, const Vec<FP>& y, CSRMat<FP>& 
 void TwoSplittingIVP::SplitMat2Sparse(const FP t, const Vec<FP>& y, CSRMat<FP>& mat) {
 	throw Exception() << GetName() << " does not implement a sparse matrix for the second split component.";
 }
-
-#endif
 
 TwoSplittingIVP::TwoSplittingIVP(Hash<ParamValue>& params) : BaseIVP(params,2), _fEvals(0), _gEvals(0), _freezeCommon(false) {
 }

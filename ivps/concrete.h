@@ -3,12 +3,16 @@
 
 #include <ivps/splitivp.h>
 
+#ifdef USE_ADOL_C
+
 Vec<adouble> VecReal(const Vec< std::complex<adouble> >& cv) {
     Vec<adouble> ret(cv.Size());
     for( long i = 0; i < cv.Size(); i++ )
         ret(i) = cv(i).real();
     return ret;
 }
+
+#endif
 
 class ConcreteRewetting : public TwoSplittingIVP {
 	Vec<FP> _theta;

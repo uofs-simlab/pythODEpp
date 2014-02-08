@@ -98,7 +98,6 @@ protected:
 	virtual void PhysicalSplitMat(unsigned short split, const FP t, const Vec<FP>& y, Mat<FP>& mat);
 	virtual void RHS(const FP t, const Vec<FP>& y, Vec<FP>& yp) = 0;
 	
-#ifdef USE_SUITESPARSE
 	virtual void JacAnalyticSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& jac);
 
 	void JacAutodiffSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& jac);
@@ -106,7 +105,6 @@ protected:
 	void JacCentredSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& jac);
 
 	virtual void PhysicalSplitMatSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& mat);
-#endif
 
 #ifdef USE_ADOL_C
 	virtual void RHS(const adouble t, const Vec<adouble>& y, Vec<adouble>& yp);
@@ -129,11 +127,8 @@ public:
 
 	const BaseMat<FP>* SplitMat(const FP t, const Vec<FP>& y, unsigned short split);
 	const BaseMat<FP>* Jac(const FP t, const Vec<FP>& y, unsigned short split = 0);
-
-#ifdef USE_SUITESPARSE
 	const BaseMat<FP>* SplitMatSparse(const FP t, const Vec<FP>& y, unsigned short split);
 	const BaseMat<FP>* JacSparse(const FP t, const Vec<FP>& y, unsigned short split = 0);
-#endif
 
 	virtual void GetStats(Hash<ParamValue>& params) const;
 	virtual void PrintStats() const;

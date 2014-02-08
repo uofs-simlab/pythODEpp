@@ -304,14 +304,14 @@ public:
 	Vec<T> Maximum(T m) const {
 		Vec<T> ret(_size);
 		for( long i = 0; i < _size; i++ )
-			ret[i] = max(_elements[i],m);
+			ret[i] = fmax(_elements[i],m);
 		return ret;
 	}
 	
 	Vec<T> Minimum(T m) const {
 		Vec<T> ret(_size);
 		for( long i = 0; i < _size; i++ )
-			ret[i] = min(_elements[i],m);
+			ret[i] = fmin(_elements[i],m);
 		return ret;
 	}
 

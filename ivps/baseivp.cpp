@@ -112,7 +112,6 @@ void BaseIVP::PhysicalSplitMat(unsigned short split, const FP t, const Vec<FP>& 
 	throw Exception() << GetName() << " is either not split or does not provide matrices for its splitting.";
 }
 
-#ifdef USE_SUITESPARSE
 // -----------------------------------------------------------------------------
 // Definitions for sparsity, which are almost identical to the above definitions
 //
@@ -185,8 +184,6 @@ void BaseIVP::JacAutodiffSparse(unsigned short split, const FP t, const Vec<FP>&
 void BaseIVP::PhysicalSplitMatSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& mat) {
 	throw Exception() << GetName() << " is either not split or does not provide sparse matrices for its splitting.";
 }
-
-#endif
 
 #ifdef USE_ADOL_C
 void BaseIVP::RHS(const adouble t, const Vec<adouble>& y, Vec<adouble>& yp) {
@@ -403,7 +400,6 @@ const BaseMat<FP>* BaseIVP::Jac(const FP t, const Vec<FP>& y, unsigned short spl
 	return _splitJacs[split];
 }
 
-#ifdef USE_SUITESPARSE
 const BaseMat<FP>* BaseIVP::SplitMatSparse(const FP t, const Vec<FP>& y, unsigned short split) {
 	if( _jacSplitting ) {
 		if( split == 1 )
@@ -463,7 +459,6 @@ const BaseMat<FP>* BaseIVP::JacSparse(const FP t, const Vec<FP>& y, unsigned sho
 
 	return _splitJacs[split];
 }
-#endif
 
 void BaseIVP::GetStats(Hash<ParamValue>& params) const {
 }

@@ -8,10 +8,12 @@
 #include <core/mat.h>
 #include <core/timer.h>
 
-#ifdef __APPLE__
-	#include <umfpack.h>
-#else
-	#include <suitesparse/umfpack.h>
+#if USE_SUITESPARSE
+	#ifdef __APPLE__
+		#include <umfpack.h>
+	#else
+		#include <suitesparse/umfpack.h>
+	#endif
 #endif
 
 template <class T>
@@ -391,23 +393,32 @@ public:
 
 template<> inline
 void CSRMat<FP>::FreeUMFPack() {
+#ifdef USE_SUITESPARSE
 	if( _factor )
 		umfpack_di_free_numeric(&_factor);
 	if( _symbolic )
 		umfpack_di_free_symbolic(&_symbolic);
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 template<> inline
 void CSRMat<CFP>::FreeUMFPack() {
+#ifdef USE_SUITESPARSE
 	if( _factor )
 		umfpack_zi_free_numeric(&_factor);
 	if( _symbolic )
 		umfpack_zi_free_symbolic(&_symbolic);
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 // TODO: FIXME: Think of a better way to leave error messages here
 template<> inline
 void CSRMat<FP>::Factor() {
+#ifdef USE_SUITESPARSE
 	if( _symbolic )
 		umfpack_di_free_symbolic(&_symbolic);
 	if( _factor )
@@ -431,10 +442,14 @@ void CSRMat<FP>::Factor() {
 		throw Exception() << "umfpack_di_numeric failed.";
 	}
 	//printf("    numeric factor time: %dms\n", (int)nf.msec());
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 template<> inline
 void CSRMat<CFP>::Factor() {
+#ifdef USE_SUITESPARSE
 	if( _symbolic )
 		umfpack_zi_free_symbolic(&_symbolic);
 	if( _factor )
@@ -452,17 +467,25 @@ void CSRMat<CFP>::Factor() {
 
 	delete [] re;
 	delete [] im;
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 template<> inline 
 void CSRMat<FP>::Solve(Vec<FP>& b, Vec<FP>& x) {
+#ifdef USE_SUITESPARSE
 	if( !_factor )
 		throw Exception() << "Attempted sparse solve without factorizing first\n";
 	umfpack_di_solve(UMFPACK_At, _rowPtr, _colInd, this->_elements, *x, *b, _factor, 0, 0);
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 template<> inline 
 void CSRMat<CFP>::Solve(Vec<CFP>& b, Vec<CFP>& x) {
+#ifdef USE_SUITESPARSE
 	if( !_factor )
 		throw Exception() << "Attempted sparse solve without factorizing first\n";
 	Vec<FP> rex(x.Size());
@@ -484,6 +507,9 @@ void CSRMat<CFP>::Solve(Vec<CFP>& b, Vec<CFP>& x) {
 	
 	delete [] re;
 	delete [] im;
+#else
+	throw Exception() << "Not compiled with support for sparse solvers.";
+#endif
 }
 
 template <class T>

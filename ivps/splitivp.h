@@ -45,11 +45,9 @@ protected:
 	virtual void CalculateCommon(const adouble t, const Vec<adouble>& y) { }
 #endif
 
-#ifdef USE_SUITESPARSE
 	void PhysicalSplitMatSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& mat);
 	virtual void SplitMat1Sparse(const FP t, const Vec<FP>& y, CSRMat<FP>& mat);
 	virtual void SplitMat2Sparse(const FP t, const Vec<FP>& y, CSRMat<FP>& mat);	
-#endif
 
 public:
 	TwoSplittingIVP(Hash<ParamValue>& params);

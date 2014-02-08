@@ -13,7 +13,6 @@ class HeatTransfer : public TwoSplittingIVP {
 	FP _dx;
 	FP _dy;
 
-#ifdef USE_SUITESPARSE
 	inline void JacValue(FP* values, long* colInd, long& pos, FP value, long ind) {
 		values[pos] = value;
 		colInd[pos] = ind;
@@ -62,7 +61,6 @@ class HeatTransfer : public TwoSplittingIVP {
 		delete [] colInd;
 		delete [] rowPtr;
 	}
-#endif
 
 	template <class T>
 	void Split1Internal(const T t, const Vec<T>& y, Vec<T>& yp) {

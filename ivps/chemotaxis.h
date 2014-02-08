@@ -57,7 +57,7 @@ class Angiogenesis1D : public TwoSplittingIVP {
 			//FP dpicpi = 2*k*p/sqr(_dx);
 			FP dpidpi = (-k/(2*sqr(_dx)))*(cm1-2*c+cp1);
 			FP dpicpi = (-k/(2*sqr(_dx)))*(-1)*(pm1+2*p+pp1);
-			JacValue(values, colInd, pos, -2*e/sqr(_dx) + dpidpi + r*(_mu*(1-2*p)*max(0.,c-_cstar) - _beta), 2*i);
+			JacValue(values, colInd, pos, -2*e/sqr(_dx) + dpidpi + r*(_mu*(1-2*p)*fmax(0.,c-_cstar) - _beta), 2*i);
 			JacValue(values, colInd, pos, dpicpi + r*(_mu*p*(1-p)*(c-_cstar>0?1:0)), 2*i+1);
 			if( i < _n-1 ) {
 				//FP dpidpip1 = -k*(cp1-cm1)/sqr(2*_dx);

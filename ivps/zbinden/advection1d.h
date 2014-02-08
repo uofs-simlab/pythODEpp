@@ -8,7 +8,6 @@ class AdvectionDiffusion1D : public TwoSplittingIVP {
 	FP _advection;
 	FP _diffusivity;
 
-#ifdef USE_SUITESPARSE
 	void JacAnalyticSparse(unsigned short split, const FP t, const Vec<FP>& y, CSRMat<FP>& jac) {
 		FP diff = _diffusivity*_n*_n;
 		FP adv  = _advection*_n/2;
@@ -106,7 +105,6 @@ class AdvectionDiffusion1D : public TwoSplittingIVP {
 	void SplitMat2Sparse(const FP t, const Vec<FP>& y, CSRMat<FP>& mat) {
 		JacAnalyticSparse(2, t, y, mat);
 	}
-#endif
 
 	// These templates are necessary so the RHS can be called by both
 	// standard calls and ADOL-C
