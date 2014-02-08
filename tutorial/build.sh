@@ -10,7 +10,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "bibtex pass"
-cp $HOME/Projects/mscthesis/mscthesis.bib ./$DOCNAME.bib
+cp $HOME/Projects/apreuss/thesis/mscthesis.bib ./$DOCNAME.bib
 bibtex $DOCNAME > /dev/null
 if [ $? -ne 0 ]; then
 	echo "bibtex failed"

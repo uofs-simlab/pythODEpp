@@ -75,7 +75,14 @@ This software makes use of many advanced C++ concepts.
 Although the implementation of numerical methods and \acp{IVP} is not generally complicated, much of the supporting code uses such concepts.
 Specific examples include templated classes/functions and exception handling.
 
-\section{Software Design}
+\section{Overview and Installation}
+
+The software can presently be accessed via the Numerical Simulation Lab's subversion server. Navigate to the location for which \pypp\ can be installed and execute the following command.
+\begin{verbatim}
+svn co svn+ssh://<username>@simcity.usask.ca/Users/svn/pythODE/pythODE++
+\end{verbatim}
+
+\subsection{Software Design}
 
 The software is organized into the following directories:
 \begin{itemize}
@@ -89,6 +96,12 @@ The software is organized into the following directories:
 \item \verb=solvers= contains implementations for all solvers in \pypp.
 \item \verb=tutorial= contains the \LaTeX\ source associated with this document.
 \end{itemize}
+
+\subsection{Compiling}
+
+The \pypp\ PSE is compiled using the \verb=build= script located at the top level of the \pypp\ repository. Simply invoke this script (by typing \verb=./build=) to compile. Arguments to the builder script include \verb=debug= to compile with special debug information and \verb=clean= to completely remove all executables and intermediate build files.
+
+By default, the software assumes that it will be built linking libraries for \adolc\ and \umfpack. If these libraries are not installed, the build script should be called with arguments \verb=noadolc= and/or \verb=nosparsity= .
 
 \section{Scripting}
 
