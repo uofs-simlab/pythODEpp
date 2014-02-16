@@ -11,6 +11,8 @@
 \newcommand{\umfpack}{\texttt{UMFPACK}}
 \newcommand{\colpack}{\texttt{ColPack}}
 \newcommand{\gnuplot}{\texttt{gnuplot}}
+\newcommand{\numpy}{\texttt{numpy}}
+\newcommand{\scipy}{\texttt{scipy}}
 
 \acrodef{IVP}{initial-value problem}
 \acrodef{OO}{object-oriented}
@@ -26,14 +28,13 @@
 \label{sec:intro}
 
 The \pypp\ \ac{PSE} is designed to evaluate permutations of numerical
-methods and \acp{IVP}.  It is a stand-alone collection of scripts and
-programs that is heavily based on the functionality of \pythode.  The
-\pypp\ PSE is designed to be performance-focused, whereas \pythode\ is
-geared more toward performing in-depth and highly customizable
-analysis.
+methods and \acp{IVP}\footnote{Recall that an \ac{IVP} is comprised of an ordinary-differential equation and an initial condition.}.  It is a (mostly) stand-alone collection of scripts and
+programs that is heavily based on the functionality of a PSE that is entirely written in python, \pythode.  The
+\pypp\ PSE is designed to be performance-focused with an emphasis on runtime measurements of numerical experimentation, whereas \pythode\ is
+geared more toward performing in-depth and highly customizable analysis.
 
 The numerical methods and \acp{IVP} in \pypp\ are written entirely in
-C++.  The supporting execution and analysis scripts are written in
+C++. The supporting execution and analysis scripts are written in
 Python. A general overview of the software, motivation, and specific
 examples of application is presented in~\cite{preuss14}.  This
 tutorial aims to introduce a user to the basics of behind implementing
@@ -47,40 +48,34 @@ implementing new, more complicated problems and methods.
 
 \subsubsection{System}
 
-The minimalistic version of \pypp\ requires a C++ compiler and Python
-version 2.7.3. Therefore, \pypp\ should be supported in principle by
-any UNIX-like operating system, Windows, or Mac OS X. The \pypp\ PSE
+The minimalistic version of \pypp\ requires a C++ compiler, Python
+version 2.7.3 with \numpy\ and \scipy\ modules, and the ability to link against the standard library. Therefore, \pypp\ should be supported by
+any UNIX-like platform (e.g., Linux, OpenBSD), Windows (via Cygwin), or Mac OS X. The \pypp\ PSE
 is run exclusively from the command line.
 
-% poorly written (needs parallel structure)
+The \pypp PSE can optionally link libraries that are used to support 
+the solution of sparse linear systems and (sparse) automatic differentiation.
 It is necessary to have \adolc\ installed if automatic differentiation
 is desired. To use sparse matrices, \umfpack\ is required, along with
 its supporting library for sparsity, \colpack. Analysis graphs are
 generated using \gnuplot; therefore, \gnuplot\ should be
 installed. Specific instructions for installing these packages is
-generally operating-system dependent.
+generally operating-system dependent. Some common examples on how to install these optional libraries are given in Section~\ref{installation}.
 
 \subsubsection{Background Knowledge}
 
-To have a sense of the function of the supporting code, the user
+To have a sense of the function of the supporting code in this PSE, the user
 should be relatively comfortable with general programming concepts
 such as virtual memory, lists, hashes, and function pointers, as well
 as \ac{OO} concepts including (abstract) classes, inheritance,
 polymorphism, and operator overloading.  Further, an understanding the
 basic concepts of efficient programming with respect to the machine
-cache is highly beneficial.
+cache is highly beneficial. Ignoring caching effects can cause severe loss of performance.
 
 As discussed in Section~\ref{sec:intro}, the \pypp\ \ac{PSE} is written in a combination of C++ and Python.
 This software makes use of many advanced C++ concepts.
 Although the implementation of numerical methods and \acp{IVP} is not generally complicated, much of the supporting code uses such concepts.
 Specific examples include templated classes/functions and exception handling.
-
-\section{Overview and Installation}
-
-The software can presently be accessed via the Numerical Simulation Lab's subversion server. Navigate to the location for which \pypp\ can be installed and execute the following command.
-\begin{verbatim}
-svn co svn+ssh://<username>@simcity.usask.ca/Users/svn/pythODE/pythODE++
-\end{verbatim}
 
 \subsection{Software Design}
 
@@ -97,11 +92,31 @@ The software is organized into the following directories:
 \item \verb=tutorial= contains the \LaTeX\ source associated with this document.
 \end{itemize}
 
+\section{Installation}
+
+The software can presently be accessed via the Numerical Simulation Lab's subversion server. Navigate to the location for which \pypp\ can be installed and execute the following command.
+\begin{verbatim}
+svn co svn+ssh://<username>@simcity.usask.ca/Users/svn/pythODE/pythODE++
+\end{verbatim}
+
 \subsection{Compiling}
 
 The \pypp\ PSE is compiled using the \verb=build= script located at the top level of the \pypp\ repository. Simply invoke this script (by typing \verb=./build=) to compile. Arguments to the builder script include \verb=debug= to compile with special debug information and \verb=clean= to completely remove all executables and intermediate build files.
 
 By default, the software assumes that it will be built linking libraries for \adolc\ and \umfpack. If these libraries are not installed, the build script should be called with arguments \verb=noadolc= and/or \verb=nosparsity= .
+
+\subsection{Optional Libraries}
+
+Installation instructions for the optional libraries are presented for Ubuntu Linux and for Mac OSX. The \pypp\ PSE has been extensively tested on both of these operating systems. It is recommended that the latest version of these libraries be used; however, during the development of \pypp, no issues involving the library versions were observed.
+
+\subsubsection{Ubuntu Linux}
+
+Installation of \gnuplot\ and \umfpack\ is simple on Ubuntu Linux because these libraries exist as precompiled packages. They can be installed as follows (when run as root):
+\begin{verbatim}
+apt-get install gnuplot libsuitesparse-dev
+\end{verbatim}
+
+\subsubsection{Mac OSX}
 
 \section{Scripting}
 
