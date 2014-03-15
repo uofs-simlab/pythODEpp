@@ -19,7 +19,7 @@ for a in sys.argv[1:]:
 	elif a == 'verbose':
 		verbose = True
 	elif a == 'nosparsity':
-		splitext = False
+		sparsity = False
 	elif a == 'noadolc':
 		adolc = False
 	else:

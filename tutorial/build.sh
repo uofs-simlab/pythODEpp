@@ -10,13 +10,11 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "bibtex pass"
-cp $HOME/Projects/apreuss/thesis/mscthesis.bib ./$DOCNAME.bib
 bibtex $DOCNAME > /dev/null
 if [ $? -ne 0 ]; then
 	echo "bibtex failed"
 	exit 1
 fi
-rm -f ./$DOCNAME.bib
 
 echo "pdflatex pass 2"
 pdflatex -halt-on-error $DOCNAME.tex > /dev/null
