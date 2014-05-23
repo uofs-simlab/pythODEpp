@@ -305,6 +305,13 @@ public:
 };
 \end{lstlisting}
 
+The implementation of an IVP class (as in the above example) should be
+placed into a header file; this header file must be included in
+\verb=loaders/ivploader.cpp=. Lastly, for the IVP to be usable,
+\verb=IVPCASE(NewClassName)= must be inserted in \verb=AllocIVP()= (with
+\verb=NewClassName= replaced by the name of the class). Note that this
+line must come before the \verb=throw= statement.
+
 The right-hand side of the IVP can be interpreted as additively split
 when it is comprised of the sum of two or more contributing factors. A
 specific class \verb=TwoSplittingIVP= inherits from \verb=BaseIVP= to
