@@ -9,7 +9,8 @@ methods = {	'Radau5' : 1,
 			'DOPR54' : 4,
 			'ARK3' : 5,
 			'ARK4' : 6,
-			'ARK5' : 7 }
+			'ARK5' : 7,
+			'BS54' : 8 }
 ivp = 'VanDerPol'
 tol = [(10**-t, 10**-t) for t in range(5, 11)]
 tf = 0.55139
@@ -67,6 +68,8 @@ def GetColour(runinfo):
 		return (0.8, 0.6, 0.2)
 	if method == 'ARK5':
 		return (0.0, 0.0, 0.6)
+	if method == 'BS54':
+		return (0.6, 0.4, 0.8)
 
 def GetSymbol(runinfo):
 	method = runinfo[0][1]['method']
@@ -84,6 +87,8 @@ def GetSymbol(runinfo):
 		return 4
 	if method == 'ARK5':
 		return 10
+	if method == 'BS54':
+		return 3
 
 def GenerateAnalysisPasses():
 	passes = []

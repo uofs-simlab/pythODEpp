@@ -38,6 +38,7 @@ BaseMethod* AllocMethod(Hash<ParamValue>& params, BaseIVP* ivp) {
 	METHODCASE(DIRKCF2)
 	METHODCASE(DIRKCF3)
 	METHODCASE(ERKCF2)
+	METHODCASE(BS54)
 
 	throw Exception() << "Method " << method << " has not been defined.";
 }
