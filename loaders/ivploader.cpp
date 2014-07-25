@@ -16,6 +16,8 @@
 #include <ivps/heattransfer.h>
 #include <ivps/allencahn.h>
 
+#include <ivps/VanDerPol.h>
+
 #define IVPCASE(ivpclass) if( ivp == #ivpclass ) return new ivpclass(params);
 
 BaseIVP* AllocIVP(Hash<ParamValue>& params) {
@@ -46,6 +48,8 @@ BaseIVP* AllocIVP(Hash<ParamValue>& params) {
 	IVPCASE(NonstiffD1) IVPCASE(NonstiffD2) IVPCASE(NonstiffD3) IVPCASE(NonstiffD4) IVPCASE(NonstiffD5)
 	IVPCASE(NonstiffE1) IVPCASE(NonstiffE2) IVPCASE(NonstiffE3) IVPCASE(NonstiffE4) IVPCASE(NonstiffE5)
 	IVPCASE(NonstiffF1) IVPCASE(NonstiffF2) IVPCASE(NonstiffF3) IVPCASE(NonstiffF4) IVPCASE(NonstiffF5)
+
+	IVPCASE(VanDerPol)
     
 	throw Exception() << "IVP " << ivp << " has not been defined.";
 }
