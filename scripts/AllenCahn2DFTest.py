@@ -1,35 +1,34 @@
 import os
+import math
 
-simname = 'VanDerPol'
+simname = 'AllenCahn2DF'
 simpath = os.path.join(os.getenv('HOME'), 'tmp', simname)
 
-methods = {	'Radau5' : 1,
-			'RKC1' : 2,
-			'RKC2' : 3,
-			'DOPR54' : 4,
-			'ARK3' : 5,
-			'ARK4' : 6,
-			'ARK5' : 7,
-			'BS54' : 8 }
-ivp = 'VanDerPol'
-tol = [(10**-t, 10**-t) for t in range(5, 11)]
-tf = 0.55139
-timingRuns = 25
-epsilon = 0.01
-y0 = 2
-z0 = -0.6654321
+methods = {	#'Radau5' : 1,
+			#'RKC1' : 2,
+			#'RKC2' : 3,
+			#'DOPR54' : 4,
+			#'ARK3' : 5,
+			#'ARK4' : 6,
+			'ARK5' : 7}#,
+			#'BS54' : 8 }
+ivp = 'AllenCahn2DF'
+tol = [(10**-t, 10**-t) for t in range(10, 13)]
+tf = 0.5
+timingRuns = 1
+alpha = 0.01
+gamma = 3
+N = 1000
 
-reference = {	'ivp' : ivp,
-				'epsilon' : epsilon,
-				'y0' : y0,
-				'z0' : z0,
-				'tf' : tf,
-				'method' : 'Radau5',
-				'jacobian' : 'Analytic',
-				'solver' : 'EmbeddedSolver',
-				'min write time' : tf / 100,
-				'atol' : tol[-1][0] / 1000,
-				'rtol' : tol[-1][1] / 1000	}
+def GenerateReferenceSolution():	
+	y = []
+	for i in range(N):
+		for j in range(N):
+			x = math.sin(math.pi * 2 * (-tf + float(j + 1) / (N + 1)))
+			x = x * math.cos(math.pi * 3 * (-tf + float(i + 1) / (N + 1)))
+			x = 2 + x
+			y.append(x)
+	return { 'y' : y, 't' : tf }
 
 def GenerateRunList():
 	runlist = []
@@ -37,18 +36,19 @@ def GenerateRunList():
 		for t in range(len(tol)):
 			for x in range(timingRuns):
 				ne = {	'ivp' : ivp,
-						'epsilon' : epsilon,
-						'y0' : y0,
-						'z0' : z0,
+						'alpha' : alpha,
+						'gamma' : gamma,
+						'N' : N,
 						'tf' : tf,
 						'method' : m,
 						'solver' : 'EmbeddedSolver',
 						'jacobian' : 'Analytic',
+						'sparse' : 1,
 						'atol' : tol[t][0],
 						'rtol' : tol[t][1],
+						'min write time' : 0.1,
 						'timing group' : methods[m] * 100 + t	}
 				runlist.append(ne.copy())
-	runlist.append(reference)
 	return runlist
 
 def LegendName(runinfo):
@@ -94,6 +94,7 @@ def GetSymbol(runinfo):
 
 def GenerateAnalysisPasses():
 	passes = []
+	rs = GenerateReferenceSolution()
 	accuracy = {	'mode' : 'Accuracy',
 					'comparison' : 'steps',
 					'title' : 'Method Accuracy vs Steps',
@@ -106,9 +107,7 @@ def GenerateAnalysisPasses():
 					'ylabel' : 'Steps',
 					'legend' : LegendName,
 					'plottxt' : 1,
-					'reference run' : {	'ivp' : ivp,
-										'method' : reference['method'],
-										'atol' : reference['atol']	},
+					'reference solution' : rs,
 					'match' : {	'atol' : [t[0] for t in tol] },
 					'group' : [ 'method' ] }
 	time = {	'mode' : 'Accuracy',
@@ -123,9 +122,7 @@ def GenerateAnalysisPasses():
 				'ylabel' : 'Time (ms)',
 				'legend' : LegendName,
 				'plottxt' : 1,
-				'reference run' : {	'ivp' : ivp,
-									'method' : reference['method'],
-									'atol' : reference['atol']	},
+				'reference solution' : rs,
 				'match' : {	'atol' : [t[0] for t in tol] },
 				'group' : [ 'method' ] }
 	passes.append(accuracy)
