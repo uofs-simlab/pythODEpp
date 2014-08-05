@@ -4,21 +4,21 @@ import math
 simname = 'AllenCahn2DF'
 simpath = os.path.join(os.getenv('HOME'), 'tmp', simname)
 
-methods = {	#'Radau5' : 1,
-			#'RKC1' : 2,
-			#'RKC2' : 3,
-			#'DOPR54' : 4,
-			#'ARK3' : 5,
-			#'ARK4' : 6,
-			'ARK5' : 7}#,
-			#'BS54' : 8 }
+methods = {	'Radau5' : 1,
+			'RKC1' : 2,
+			'RKC2' : 3,
+			'DOPR54' : 4,
+			'ARK3' : 5,
+			'ARK4' : 6,
+			'ARK5' : 7,
+			'BS54' : 8 }
 ivp = 'AllenCahn2DF'
-tol = [(10**-t, 10**-t) for t in range(10, 13)]
+tol = [(10**-t, 10**-t) for t in range(4, 7)]
 tf = 0.5
-timingRuns = 1
+timingRuns = 10
 alpha = 0.01
 gamma = 3
-N = 1000
+N = 100
 
 def GenerateReferenceSolution():	
 	y = []
