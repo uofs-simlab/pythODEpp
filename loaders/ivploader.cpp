@@ -18,6 +18,7 @@
 
 #include <ivps/AllenCahn2DF.h>
 #include <ivps/VanDerPol.h>
+#include <ivps/ViscousBurgers.h>
 
 #define IVPCASE(ivpclass) if( ivp == #ivpclass ) return new ivpclass(params);
 
@@ -52,6 +53,7 @@ BaseIVP* AllocIVP(Hash<ParamValue>& params) {
 
 	IVPCASE(AllenCahn2DF)
 	IVPCASE(VanDerPol)
+	IVPCASE(ViscousBurgers)
     
 	throw Exception() << "IVP " << ivp << " has not been defined.";
 }
