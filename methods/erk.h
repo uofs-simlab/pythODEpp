@@ -17,6 +17,7 @@
 #include <methods/erk/zonneveld43.h>
 #include <methods/erk/verner65.h>
 
+#include <methods/erk/bs23.h>
 #include <methods/erk/bs54.h>
 
 #endif
