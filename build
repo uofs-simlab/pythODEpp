@@ -26,7 +26,7 @@ for a in sys.argv[1:]:
 		print 'Unrecognized option', a
 		sys.exit(2)
 	
-debug_flags = ['-Wall','-g','-DDEBUGBUILD'] if debug else ['-O3']
+debug_flags = ['-Wall','-g','-DDEBUGBUILD','-std=c++11'] if debug else ['-O3','-std=c++11']
 ld_flags = [] if debug else ['-O3']
 
 # Root build directory

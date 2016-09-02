@@ -148,8 +148,7 @@ protected:
 			{
 				index = N * i + j;
 				yind = y[index];
-				yp[index] = gamma * yind * (1 - yind * yind)
-					+ f(delta * (j + 1), delta * (i + 1), t);
+ 				yp[index] = gamma * yind * (1 - yind * yind) + f<T>(delta * (j + 1), delta * (i + 1), t);
 			}
 		}
 	}
