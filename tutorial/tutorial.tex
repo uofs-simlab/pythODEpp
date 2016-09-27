@@ -139,7 +139,11 @@ Installation of \gnuplot\ and \umfpack\ is simple on Ubuntu Linux because these 
 apt-get install gnuplot libsuitesparse-dev
 \end{verbatim}
 
-\subsubsection{Mac OSX}
+When you compile \pypp\ make sure to include the libraries in your LD\_LIBRARY path, the command is:
+\begin{verbatim} 
+export LD_LIBRARY= \$ LD_LIBRARY:/usr/include/
+\end{verbatim}
+%\subsubsection{Mac OSX}
 
 \section{Scripting}
 
@@ -262,6 +266,7 @@ def GenerateAnalysisPasses():
 						'match': {'ivp': ivp},
 						'comparison': 'steps',
 						'group': ['method','solver','jacobian'] })
+		return passes
 \end{lstlisting}
 
 
@@ -278,6 +283,8 @@ For the simple ODE $y'=-y, y(0)=10$ where the final simulation time is
 5, an implementation might look like:
 
 \begin{lstlisting}[tabsize=4,language=c++]
+#ifndef HEADERFILE_H
+#define HEADERFILE_H
 // TestEquation is inheriting from BaseIVP
 class TestEquation : public BaseIVP {	
 protected: 
@@ -303,6 +310,7 @@ public:
 	
 	IVP_NAME("Nonstiff A1") // Macro to define IVP name
 };
+#endif
 \end{lstlisting}
 
 The implementation of an IVP class (as in the above example) should be
@@ -335,7 +343,7 @@ Jacobian.
 
 \section{Implementing a Method}
 
-The implementation of a method defines how to take a step from one state to another. The following examples show how to create a single RK method and an IMEX method. The \verb=Runge2= is a second-order, explicit RK method, which is implemented as
+The implementation of a method defines how to take a step from one state to another. The following example show how to create a single RK method and an IMEX method. The \verb=Runge2= is a second-order, explicit RK method, which is implemented as
 \begin{lstlisting}[tabsize=4,language=c++]
 // Inherit from the class of ERK methods
 class Runge2 : public ERK {
