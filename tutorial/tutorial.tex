@@ -138,12 +138,28 @@ Installation of \gnuplot\ and \umfpack\ is simple on Ubuntu Linux because these 
 \begin{verbatim}
 apt-get install gnuplot libsuitesparse-dev
 \end{verbatim}
-
-When you compile \pypp\ make sure to include the libraries in your LD\_LIBRARY path, the command is:
-\begin{verbatim} 
-export LD_LIBRARY=$LD_LIBRARY:/usr/include/
+When compiling \pypp\, make sure you include the libraries in your shell, this can be done as follows:
+\begin{verbatim}
+export LD_LIBRARY=$LD_LIBRARY:/usr/lib/x86_64-linux-gnu/:/usr/include/:~/pythODE++/ 
 \end{verbatim}
+
+\begin{verbatim}
+export PATH=$PATH:/usr/lib/x86_64-linux-gnu/:/usr/include/:~/pythODE++/ 
+\end{verbatim}
+
+\begin{verbatim}
+export PYTONPATH=~/pythODE++/ 
+\end{verbatim}
+%\begin{verbatim} 
+%export LD_LIBRARY=$LD_LIBRARY:/usr/include/
+%\end{verbatim}
 %\subsubsection{Mac OSX}
+Some cretin libraries might be out of date and no longer on the computer, this problem can be fixed by cleaning out the compiled code and rebuild the new libraries by running:
+
+\begin{verbatim}
+make clean
+make build
+\end{verbatim}
 
 \section{Scripting}
 
@@ -372,6 +388,8 @@ public:
 \end{lstlisting}
 
 The IMEX method specifies two Butcher tableaux, where \verb=_a= and \verb=_b= refer to the implicit tableau, and \verb=_a2= and \verb=_b2= refer to the explicit tableau. Examples are given for any method in the folder \verb=methods/ark=.
+
+
 
 \bibliographystyle{plain}
 \bibliography{tutorial}
