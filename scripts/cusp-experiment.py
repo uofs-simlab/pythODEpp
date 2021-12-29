@@ -4,28 +4,30 @@ import itertools
 simname = 'cusp-experiment'
 simpath = os.path.join(os.getenv('HOME'), 'tmp', simname)
 
-method_solvers = { #'ForwardEuler':  ['StepDoublingSolver'],
-#				   'BackwardEuler': ['StepDoublingSolver'],
-#				   'RK4':           ['StepDoublingSolver'],
-#				   'RODAS':         ['EmbeddedSolver'],
+method_solvers = {#'ForwardEuler':  ['StepDoublingSolver'],
+		#		   'BackwardEuler': ['StepDoublingSolver'],
+		#		   'RK4':           ['StepDoublingSolver'],
+				   'RODAS':         ['EmbeddedSolver'],
 #				   'Radau5':        ['EmbeddedSolver'],
-#				   'ARK3':          ['EmbeddedSolver'],
-#				   'ARK4':          ['EmbeddedSolver'],
-#				   'ARK5':          ['EmbeddedSolver'],
-#				   'RKC1':          ['EmbeddedSolver'],
+				   'ARK3':          ['EmbeddedSolver'],
+				   'ARK4':          ['EmbeddedSolver'],
+				   'ARK5':          ['EmbeddedSolver'],
+				   'RKC1':          ['EmbeddedSolver'],
 				   'RKC2':          ['EmbeddedSolver'] }
-#				   'PRKC':          ['EmbeddedSolver'],
-#				   'IRKC':          ['EmbeddedSolver'],
-#				   'RKF45':         ['EmbeddedSolver'],
+		#		   'PRKC':          ['EmbeddedSolver'],
+		#		   'IRKC':          ['EmbeddedSolver'],
+                 #                  'RKF45':         ['EmbeddedSolver'],}
 #				   'Merson43':      ['EmbeddedSolver'],
 #				   'Verner65':      ['EmbeddedSolver'],
-#				   'Radau5':        ['EmbeddedSolver'] }
+	       # 		   'Radau5':        ['EmbeddedSolver'] }
 
-methods = [ m for m in method_solvers ]
+#methods = [ m for m in method_solvers ]
+methods = ['RODAS']
 ark_methods = [ 'ARK3', 'ARK4', 'ARK5' ]
 ivps = ['CUSP']
-#unknowns = (200,500,1000,2000)
-unknowns = (32,)
+#unknowns = (500,1000)
+unknowns = (200,500,1000,2000)
+#unknowns = (32,)
 tolerances = [(t,t) for t in [1e-4, 1e-5, 1e-6, 1e-7, 1e-8 ]]
  
 def GenerateRunList():
@@ -93,7 +95,7 @@ def GenerateAnalysisPasses():
 	passes = []
 	for ivp, N in itertools.product(ivps,unknowns):
 		solution1d = { 'mode': 'Solutions',
-					   'match': {'ivp': ivp, 'N': N, 'method': 'RKC2', 'atol': tolerances[-1][0] },
+					   'match': {'ivp': ivp, 'N': N, 'method': 'RODAS', 'atol': tolerances[-1][0] },
 					   'title': ivp + ' Solution (N=%d)' % N,
 					   'filename': ivp.lower() + '-%d' % (N),
 					   'cuspplot': 1,
@@ -109,7 +111,7 @@ def GenerateAnalysisPasses():
 						 'plottxt': 1,
 						 'reference run': {'ivp':    ivp,
 										   'N':      N,
-										   'method': 'RKC2',
+										   'method': 'RODAS',
 										   'atol':   tolerances[-1][0] },
 						 'match': {'ivp': ivp, 'N': N },
 						 'group': ['method','solver','jacobian splitting'] }

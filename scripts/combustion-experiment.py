@@ -21,8 +21,8 @@ method_solvers = { #'ForwardEuler':  ['StepDoublingSolver'],
 #				   'Verner65':      ['EmbeddedSolver'],
 #				   'DOPR54':        ['EmbeddedSolver'] }
 
-#methods = [ m for m in method_solvers ]
-methods = [ 'Radau5' ]
+methods = [ m for m in method_solvers ]
+#methods = [ 'Radau5' ]
 ark_methods = [ 'ARK3', 'ARK4', 'ARK5' ]
 ivps = ['CombustionARD']
 uvalues = ( 0., 0.75, 0.99 )

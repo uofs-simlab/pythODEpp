@@ -26,8 +26,10 @@ ark_methods = [ 'ARK3', 'ARK4', 'ARK5' ]
 
 ivp_unknowns = {'Brusselator1D': (500, 1000),
 				'Brusselator2D': (50, 75, 100) }
-ivps = [ i for i in ivp_unknowns ]
-ivps = ['Brusselator1D']
+#ivps = [ i for i in ivp_unknowns ]
+#ivps = ['Brusselator1D']
+ivps = ['Brusselator2D']
+
 
 tolerances = [(t,t) for t in [1e-4, 1e-5, 1e-6, 1e-7, 1e-8 ]]
 alphas = (2e-2,2e-3,)
